@@ -1,0 +1,27 @@
+body {
+    background-image: url(/images/wallpaper.jpg);
+    padding: 50px;
+}
+/* Main container */
+#container {
+    display: flex;
+    flex-direction: row;
+    background-color:#3F370B;
+}
+/* 3 colum containers */
+.container .canvas .gameStats {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.instructions {
+    text-align: center;
+    background-color:#D6C61F;
+}
+.gameStats {
+    background-color:#D6C61F;
+}
+button {
+    margin:20px;
+}

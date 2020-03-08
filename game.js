@@ -1,131 +1,209 @@
-/*
-  Code modified from:
-  http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/
-  using graphics purchased from vectorstock.com
-*/
-
-/* Initialization.
-Here, we create and add our "canvas" to the page.
-We also load all of our images. 
-*/
-
-
+//setting up game Canvas
 let canvas;
 let ctx;
-
-canvas = document.createElement("canvas");
+canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
-document.body.appendChild(canvas);
 
-let bgReady, heroReady, monsterReady;
-let bgImage, heroImage, monsterImage;
+let bgReady, heroReady, bananaReady, farmer1Ready, gameOverImageReady;
+let bgImage, heroImage, bananaImage, farmer1Image, gameOverImage;
 
+let gameOver=false;
+let nameEntered=false;
+
+//user input and output on the screen
+let playerInput = document.getElementById("nameInput"); //grabs the user input
+let playerOutput = document.getElementById("nameOutput"); //specifies the output location
+
+function checkInput(){
+  let name = playerInput.value;
+    if (playerInput.value == 0){
+    alert("Set a nickname to start playing!")
+    } else {
+    playerOutput.innerHTML = name;
+    timeCountdown = true;
+     // main();
+    nameEntered=true;
+    elapsedTime=0;
+    gameOver=false;
+    startTime=Date.now(0);
+    gameOverImageReady=false;
+    }
+
+};
+
+// show the background image
+bgImage = new Image();
+bgImage.onload = function () {
+  bgReady = true;
+};
+bgImage.src = "images/field.jpg";
+
+//setting the time
+let timeRemain = document.getElementById("remainingTime");
 let startTime = Date.now();
-const SECONDS_PER_ROUND = 30;
+const SECONDS_PER_ROUND = 10;
 let elapsedTime = 0;
 
+//Points
+let points = document.getElementById("points");//specify the output locations for points
+let score = 0;
+
+
 function loadImages() {
-  bgImage = new Image();
-  bgImage.onload = function () {
-    // show the background image
-    bgReady = true;
-  };
-  bgImage.src = "images/background.png";
+
+  // show the hero image
   heroImage = new Image();
   heroImage.onload = function () {
-    // show the hero image
     heroReady = true;
   };
-  heroImage.src = "images/hero.png";
-
-  monsterImage = new Image();
-  monsterImage.onload = function () {
-    // show the monster image
-    monsterReady = true;
+  heroImage.src = "images/monkey.png";
+  // show the banana image
+  bananaImage = new Image();
+  bananaImage.onload = function () {
+    bananaReady = true;
   };
-  monsterImage.src = "images/monster.png";
+  bananaImage.src = "images/banana2.png";
+  // show the farmer image
+  farmer1Image = new Image();
+  farmer1Image.onload = function () {
+    farmer1Ready = true;
+  };
+  farmer1Image.src = "images/farmer.png";
+
+  gameOverImage = new Image();
+  gameOverImage.onload = function () {
+    gameOverImageReady = false;
+  };
+  gameOverImage.src = "images/gameOver.png";
 }
 
-/** 
- * Setting up our characters.
- * 
- * Note that heroX represents the X position of our hero.
- * heroY represents the Y position.
- * We'll need these values to know where to "draw" the hero.
- * 
- * The same applies to the monster.
- */
+// Setting up our characters.
 
 let heroX = canvas.width / 2;
 let heroY = canvas.height / 2;
+let bananaX = 100;
+let bananaY = 100;
+let farmer1X = 300;
+let farmer1Y = 20;
+let farmerCase = 1;
 
-let monsterX = 100;
-let monsterY = 100;
+let firstFarmerSpeedX = 10;
+let firstFarmerSpeedY = 10;
 
-/** 
- * Keyboard Listeners
- * You can safely ignore this part, for now. 
- * 
- * This is just to let JavaScript know when the user has pressed a key.
-*/
+// This is just to let JavaScript know when the user has pressed a key
+
 let keysDown = {};
 function setupKeyboardListeners() {
   // Check for keys pressed where key represents the keycode captured
-  // For now, do not worry too much about what's happening here. 
   addEventListener("keydown", function (key) {
     keysDown[key.keyCode] = true;
   }, false);
-
   addEventListener("keyup", function (key) {
     delete keysDown[key.keyCode];
   }, false);
 }
-
+//when time runs out
+function youLose(){
+  gameOver=true;
+  gameOverImageReady=true;
+}
 
 /**
  *  Update game objects - change player position based on key pressed
- *  and check to see if the monster has been caught!
- *  
- *  If you change the value of 5, the player will move at a different rate.
+ *  and check to see if the banana has been caught!
  */
+
 let update = function () {
-  // Update the time.
-  elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+  if(gameOver){
+    return;
+  }
+  if (`${SECONDS_PER_ROUND - elapsedTime}` <= 0) {
+    gameOver = true;
+    gameOverImageReady=true;
+  }
+  if(nameEntered){
+    elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    if (38 in keysDown) { // Player is holding up key
+      heroY -= 5;
+    }
+    if (40 in keysDown) { // Player is holding down key
+      heroY += 5;
+    }
+    if (37 in keysDown) { // Player is holding left key
+      heroX -= 5;
+    }
+    if (39 in keysDown) { // Player is holding right key
+      heroX += 5;
+    }
+    if (heroX >= canvas.width - 32) {
+      heroX = 0;
+    }
+    if (heroX < 0) {
+      heroX = canvas.width - 32;
+    }
+    if (heroY >= canvas.height - 32) {
+      heroY = 0;
+    }
+    if (heroY < 0) {
+      heroY = canvas.height - 32;
+    }
 
+    farmer1X = farmer1X + firstFarmerSpeedX;
+    farmer1Y = farmer1X + firstFarmerSpeedY;
 
-  if (38 in keysDown) { // Player is holding up key
-    heroY -= 5;
-  }
-  if (40 in keysDown) { // Player is holding down key
-    heroY += 5;
-  }
-  if (37 in keysDown) { // Player is holding left key
-    heroX -= 5;
-  }
-  if (39 in keysDown) { // Player is holding right key
-    heroX += 5;
-  }
+    if (farmer1X > canvas.width - 32) {
+      firstFarmerSpeedX = - firstFarmerSpeedX;
+    } else if (farmer1Y > canvas.height - 32) {
+      firstFarmerSpeedY = -firstFarmerSpeedY;
+    } else if (farmer1X < 1) {
+      firstFarmerSpeedX = -firstFarmerSpeedX;
+    } else if (farmer1Y < 0) {
+      firstFarmerSpeedY = -firstFarmerSpeedY;
+    }
 
-  // Check if player and monster collided. Our images
-  // are about 32 pixels big.
-  if (
-    heroX <= (monsterX + 32)
-    && monsterX <= (heroX + 32)
-    && heroY <= (monsterY + 32)
-    && monsterY <= (heroY + 32)
-  ) {
-    // Pick a new location for the monster.
-    // Note: Change this to place the monster at a new, random location.
-    monsterX = monsterX + 50;
-    monsterY = monsterY + 70;
+    if (farmerCase == 1) {
+      farmer1X += 1
+      farmer1Y += 1
+    } else if (farmerCase == 2) {
+      farmer1X -= 1
+      farmer1Y += 1
+    } else if (farmerCase == 3) {
+      farmer1X -= 1
+      farmer1Y -= 1
+    } else if (farmerCase == 4) {
+      farmer1X -= 1
+      farmer1Y -= 1
+    }
+
+    //calculate and display the remaining time into html
+
+    // Check if player and banana collided
+    if (
+      heroX <= (bananaX + 32)
+      && bananaX <= (heroX + 32)
+      && heroY <= (bananaY + 32)
+      && bananaY <= (heroY + 32)
+    ) {
+      score += +1;
+      points.innerHTML = `${score}`
+      console.log("score", score)
+
+      // Pick a new random location for the banana (min, max) values set
+      bananaX = getMyRandom(0, 480)
+      bananaY = getMyRandom(0, 448)
+    }
+
   }
+  
 };
 
-/**
- * This function, render, runs as often as possible.
- */
+function getMyRandom(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+//  This function, render, runs as often as possible (60fps)
 var render = function () {
   if (bgReady) {
     ctx.drawImage(bgImage, 0, 0);
@@ -133,31 +211,34 @@ var render = function () {
   if (heroReady) {
     ctx.drawImage(heroImage, heroX, heroY);
   }
-  if (monsterReady) {
-    ctx.drawImage(monsterImage, monsterX, monsterY);
+  if (bananaReady) {
+    ctx.drawImage(bananaImage, bananaX, bananaY);
   }
-  ctx.fillText(`Seconds Remaining: ${SECONDS_PER_ROUND - elapsedTime}`, 20, 100);
+  if (farmer1Ready) {
+    ctx.drawImage(farmer1Image, farmer1X, farmer1Y);
+  }
+  timeRemain.innerHTML =`${SECONDS_PER_ROUND - elapsedTime}`;
+
+  if (gameOverImageReady){
+    ctx.drawImage(gameOverImage, 120 , 140 , 300, 200)
+  }
 };
 
 /**
  * The main game loop. Most every game will have two distinct parts:
- * update (updates the state of the game, in this case our hero and monster)
+ * update (updates the state of the game, in this case our hero and banana)
  * render (based on the state of our game, draw the right things)
  */
 var main = function () {
-  update(); 
+  update();
   render();
-  // Request to do this again ASAP. This is a special method
-  // for web browsers. 
   requestAnimationFrame(main);
 };
 
-// Cross-browser support for requestAnimationFrame.
-// Safely ignore this line. It's mostly here for people with old web browsers.
+// Cross-browser support for requestAnimationFrame (mostly for old browsers)
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-// Let's play this game!
-loadImages();
+loadImages()
 setupKeyboardListeners();
 main();
