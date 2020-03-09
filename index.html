@@ -12,30 +12,39 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <h1 class="text-center font-weight-bold py-3" style="color: white; font-size: 60px">Feed the monkey</h1>
+    <h1 class="text-center font-weight-bold py-3" style="color:#D6C61F; font-size: 60px">Feed the monkey</h1>
     <div id="container">
       <div class="row">
         <div class="col col-3 instructions">
             <h2 style="text-align: center;">Instructions</h2>
-            <p>
-              It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-            </p>
+            <ol>
+            <li>Use arrow keys to control the monkey figure.</li>
+            <li>Collect as many bananas you can in 30sec</li>
+            <li>Avoid collisions with farmer as that will cost you minus points</li>
+            </ol>
             <form action="">
               <fieldset style="text-align: center";>
                 <label for="playerInput"></label>
                 <input type="text" name="nickname" id="nameInput" placeholder="Your nickname"/>
               </fieldset>
             </form>
-          <button id="startGame" onclick="checkInput()">Start</button>
+          <button id="startGame" onclick="startBtn()">Start</button>
         </div>   
         <div class="col col-6 text-center">
         <canvas id="canvas" style="padding-top:20px"></canvas>
         </div>
         <div class="col col-3 gameStats">
-          <li>Player : <output id="nameOutput"></li>
-            <li>Time : <span id="remainingTime"></span></li>
-            <li>Bananas : <span id="points"></span></li>
-            <button id="reset";>Reset Game</button>
+          <h2 style="text-align: center;">Game stats</h2>
+          <ul style="list-style: none; font-size:20px;">
+          <li>🐵 : <output id="nameOutput"></li>
+          <li>⏰ : <span id="remainingTime"></span></li>
+          <li>🍌: <span id="points"></span></li>
+          <button id="reset" onclick="resetBtn()">Reset Game</button>
+           <h2 style="text-align: center;">History</h2>
+            <ol>
+            <li></li>
+            </ol>
+          </ul>
           </div>
         </div>
       </div>

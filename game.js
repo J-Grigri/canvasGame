@@ -16,14 +16,13 @@ let nameEntered=false;
 let playerInput = document.getElementById("nameInput"); //grabs the user input
 let playerOutput = document.getElementById("nameOutput"); //specifies the output location
 
-function checkInput(){
+function startBtn(){
   let name = playerInput.value;
     if (playerInput.value == 0){
     alert("Set a nickname to start playing!")
     } else {
     playerOutput.innerHTML = name;
     timeCountdown = true;
-     // main();
     nameEntered=true;
     elapsedTime=0;
     gameOver=false;
@@ -32,6 +31,15 @@ function checkInput(){
     }
 
 };
+function resetBtn(){
+    timeCountdown = true;
+    nameEntered = true;
+    elapsedTime = 0;
+    gameOver = false;
+    startTime = Date.now(0);
+    gameOverImageReady = false;
+    score = 0;
+}
 
 // show the background image
 bgImage = new Image();
@@ -43,7 +51,7 @@ bgImage.src = "images/field.jpg";
 //setting the time
 let timeRemain = document.getElementById("remainingTime");
 let startTime = Date.now();
-const SECONDS_PER_ROUND = 10;
+const SECONDS_PER_ROUND = 30;
 let elapsedTime = 0;
 
 //Points
@@ -85,12 +93,12 @@ let heroX = canvas.width / 2;
 let heroY = canvas.height / 2;
 let bananaX = 100;
 let bananaY = 100;
-let farmer1X = 300;
-let farmer1Y = 20;
+let farmer1X = 50;
+let farmer1Y = 50;
 let farmerCase = 1;
 
-let firstFarmerSpeedX = 10;
-let firstFarmerSpeedY = 10;
+let firstFarmerSpeedX = 3;
+let firstFarmerSpeedY = 3;
 
 // This is just to let JavaScript know when the user has pressed a key
 
@@ -120,8 +128,7 @@ let update = function () {
     return;
   }
   if (`${SECONDS_PER_ROUND - elapsedTime}` <= 0) {
-    gameOver = true;
-    gameOverImageReady=true;
+    youLose()
   }
   if(nameEntered){
     elapsedTime = Math.floor((Date.now() - startTime) / 1000);
@@ -188,15 +195,22 @@ let update = function () {
     ) {
       score += +1;
       points.innerHTML = `${score}`
-      console.log("score", score)
 
       // Pick a new random location for the banana (min, max) values set
       bananaX = getMyRandom(0, 480)
       bananaY = getMyRandom(0, 448)
     }
+    if (
+      heroX <= (farmer1X + 32)
+      && farmer1X <= (heroX + 32)
+      && heroY <= (farmer1Y + 32)
+      && farmer1Y <= (heroY + 32)
+    ) {
+      score -= +1;
+      points.innerHTML = `${score}`
 
   }
-  
+}
 };
 
 function getMyRandom(min, max) {
