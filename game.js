@@ -9,36 +9,36 @@ canvas.height = 480;
 let bgReady, heroReady, bananaReady, farmer1Ready, gameOverImageReady;
 let bgImage, heroImage, bananaImage, farmer1Image, gameOverImage;
 
-let gameOver=false;
-let nameEntered=false;
+let gameOver = true;
+let nameEntered = false;
 
 //user input and output on the screen
 let playerInput = document.getElementById("nameInput"); //grabs the user input
 let playerOutput = document.getElementById("nameOutput"); //specifies the output location
 
-function startBtn(){
+function startBtn() {
   let name = playerInput.value;
-    if (playerInput.value == 0){
+  if (playerInput.value == 0) {
     alert("Set a nickname to start playing!")
-    } else {
+  } else {
     playerOutput.innerHTML = name;
-    timeCountdown = true;
-    nameEntered=true;
-    elapsedTime=0;
-    gameOver=false;
-    startTime=Date.now(0);
-    gameOverImageReady=false;
-    }
-
-};
-function resetBtn(){
     timeCountdown = true;
     nameEntered = true;
     elapsedTime = 0;
     gameOver = false;
     startTime = Date.now(0);
     gameOverImageReady = false;
-    score = 0;
+  }
+
+};
+function resetBtn() {
+  timeCountdown = true;
+  nameEntered = true;
+  elapsedTime = 0;
+  gameOver = false;
+  startTime = Date.now(0);
+  gameOverImageReady = false;
+  score = 0;
 }
 
 // show the background image
@@ -95,7 +95,7 @@ let bananaX = 100;
 let bananaY = 100;
 let farmer1X = 50;
 let farmer1Y = 50;
-let farmerCase = 1;
+// let farmerCase = 1;
 
 let firstFarmerSpeedX = 3;
 let firstFarmerSpeedY = 3;
@@ -113,9 +113,9 @@ function setupKeyboardListeners() {
   }, false);
 }
 //when time runs out
-function youLose(){
-  gameOver=true;
-  gameOverImageReady=true;
+function youLose() {
+  gameOver = true;
+  gameOverImageReady = true;
 }
 
 /**
@@ -123,14 +123,17 @@ function youLose(){
  *  and check to see if the banana has been caught!
  */
 
+let test = false
+
 let update = function () {
-  if(gameOver){
+  console.log("dd", gameOver);
+  if (gameOver == true) {
     return;
   }
   if (`${SECONDS_PER_ROUND - elapsedTime}` <= 0) {
     youLose()
   }
-  if(nameEntered){
+  if (nameEntered) {
     elapsedTime = Math.floor((Date.now() - startTime) / 1000);
     if (38 in keysDown) { // Player is holding up key
       heroY -= 5;
@@ -158,7 +161,7 @@ let update = function () {
     }
 
     farmer1X = farmer1X + firstFarmerSpeedX;
-    farmer1Y = farmer1X + firstFarmerSpeedY;
+    farmer1Y = farmer1Y + firstFarmerSpeedY;
 
     if (farmer1X > canvas.width - 32) {
       firstFarmerSpeedX = - firstFarmerSpeedX;
@@ -166,23 +169,11 @@ let update = function () {
       firstFarmerSpeedY = -firstFarmerSpeedY;
     } else if (farmer1X < 1) {
       firstFarmerSpeedX = -firstFarmerSpeedX;
-    } else if (farmer1Y < 0) {
+    } else if (farmer1Y < 1) {
       firstFarmerSpeedY = -firstFarmerSpeedY;
     }
 
-    if (farmerCase == 1) {
-      farmer1X += 1
-      farmer1Y += 1
-    } else if (farmerCase == 2) {
-      farmer1X -= 1
-      farmer1Y += 1
-    } else if (farmerCase == 3) {
-      farmer1X -= 1
-      farmer1Y -= 1
-    } else if (farmerCase == 4) {
-      farmer1X -= 1
-      farmer1Y -= 1
-    }
+
 
     //calculate and display the remaining time into html
 
@@ -193,7 +184,7 @@ let update = function () {
       && heroY <= (bananaY + 32)
       && bananaY <= (heroY + 32)
     ) {
-      score += +1;
+      score += 1;
       points.innerHTML = `${score}`
 
       // Pick a new random location for the banana (min, max) values set
@@ -201,16 +192,20 @@ let update = function () {
       bananaY = getMyRandom(0, 448)
     }
     if (
-      heroX <= (farmer1X + 32)
-      && farmer1X <= (heroX + 32)
-      && heroY <= (farmer1Y + 32)
-      && farmer1Y <= (heroY + 32)
+      heroX <= (farmer1X + 10)
+      && farmer1X <= (heroX + 10)
+      && heroY <= (farmer1Y + 10)
+      && farmer1Y <= (heroY + 10)
     ) {
-      score -= +1;
+      if (test) score -= 1
+      test = false
+      // score -= 1;// score = score -1;
       points.innerHTML = `${score}`
 
+    } else {
+      test = true
+    }
   }
-}
 };
 
 function getMyRandom(min, max) {
@@ -231,10 +226,10 @@ var render = function () {
   if (farmer1Ready) {
     ctx.drawImage(farmer1Image, farmer1X, farmer1Y);
   }
-  timeRemain.innerHTML =`${SECONDS_PER_ROUND - elapsedTime}`;
+  timeRemain.innerHTML = `${SECONDS_PER_ROUND - elapsedTime}`;
 
-  if (gameOverImageReady){
-    ctx.drawImage(gameOverImage, 120 , 140 , 300, 200)
+  if (gameOverImageReady) {
+    ctx.drawImage(gameOverImage, 120, 140, 300, 200)
   }
 };
 
